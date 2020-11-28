@@ -58,10 +58,19 @@ c$Title <- factor(c$Title, levels = c$Title[order(desc(c$max))])
 c$Title
 
 c %>% 
-  ggplot(aes(Title, max)) + 
+  ggplot(aes(Title, max, fill = Title)) + 
   geom_col() +
   theme_classic() +
-      theme(axis.text.x = element_text(angle = 30, vjust= .7))
+      theme(legend.position = "none",
+            axis.text.x = element_text(angle = 30, vjust= .7)) +
+ # theme_classic() +
+  labs(
+    title = "Gabe's Top Songs in 11/19 to 8/20 in Terms of Total Minutes",
+  #  subtitle = "Drake dominates the listening",
+       y = "Total Minutes Listened",
+       x = "",
+    caption = "Data from November 2019 to August 2020") +
+      scale_fill_viridis_d(option = "plasma")
 
 ```
 
