@@ -1,0 +1,78 @@
+---
+title: "SpotifyAnalysis2"
+author: "Gabe Cederberg"
+date: "11/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(janitor)
+library(tidyverse)
+library(lubridate)
+library(ggrepel)
+library(dplyr)
+library(readxl)
+library(ggcharts)
+options(scipen = 999)
+
+```
+
+```{r}
+
+a <- read_excel("SpotifyData2-real.xlsx") %>% 
+    separate(Title, "Title",",") %>% 
+    separate(Time, c(NA, "Time"), " ",) %>% 
+  mutate(minutes = (MsPlayed/1000) / 60
+  )
+
+b <- a %>% 
+  group_by(ArtistName) %>% 
+  summarize(max = sum(minutes)) %>% 
+  filter(ArtistName != c("Pod Save America", "Pod Save the World")) %>% 
+  arrange(desc(max)) %>% 
+  head(10)
+
+b$ArtistName <- factor(b$ArtistName, levels = b$ArtistName[order(desc(b$max))])
+
+b %>% 
+  ggplot(aes(ArtistName, max)) + 
+  geom_col() +
+  theme_classic() +
+      theme(axis.text.x = element_text(angle = 30, vjust= .7))
+
+```
+
+```{r}
+c <- a %>% 
+  group_by(Title) %>% 
+  summarize(max = sum(minutes)) %>% 
+ # filter(ArtistName != c("Pod Save America", "Pod Save the World")) %>% 
+  arrange(desc(max)) %>% 
+  slice(1:10)
+
+c
+
+c$Title <- factor(c$Title, levels = c$Title[order(desc(c$max))])
+
+c$Title
+
+c %>% 
+  ggplot(aes(Title, max)) + 
+  geom_col() +
+  theme_classic() +
+      theme(axis.text.x = element_text(angle = 30, vjust= .7))
+
+```
+
+```{r}
+d <- a %>% 
+  filter(ArtistName == c("The Weeknd", "Drake", "Juice WRLD", "Lil Uzi Vert", "Post Malone"))
+#  group_by(Date) %>% 
+  #  summarize(max = sum(minutes))
+d
+
+d %>% ggplot(aes(Date, color = ArtistName)) +
+  geom_density()
+```
+
